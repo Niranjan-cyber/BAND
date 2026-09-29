@@ -6,7 +6,7 @@ before running an infra command from memory.
 ## Environments
 | Env | Public URL | API URL | Cloud account / profile / region |
 |---|---|---|---|
-| Production | (filled after first `vercel deploy`, and by CI in `RUNBOOK` updates) | same origin as public URL — `/health` | Vercel project `dark-factory-pocketful`, region: default (check latency once BAND agent calls are added) |
+| Production | https://we-are-dev-xband.vercel.app | same origin — `/health` | Vercel project `we-are-dev-xband` (`prj_P68DhuHgTYNVASf0gugrxskcHHzA`), team `niranjan-cybers-projects` (`team_Ght27pzXQ8zjMO4zVEthPeyk`), region: default |
 
 ## BAND Desktop (WSL2) — one-time setup
 BAND Desktop does not support Windows natively (macOS/Linux only, per participant notes — confirm current
@@ -76,7 +76,9 @@ vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 # Smoke test against the public URL CI just deployed:
 PUBLIC_URL=https://<your-deployment-url> npx playwright test tests/smoke
 
-# Logs: Vercel dashboard -> project -> Deployments -> select deployment -> Functions tab (backend/main.py)
+# Logs (works under the current CLI login even though `vercel tokens add` doesn't):
+vercel logs we-are-dev-xband.vercel.app --json
+# Dashboard: project -> Deployments -> select deployment -> Functions tab (backend/main.py)
 ```
 
 ## Rollback
@@ -89,8 +91,8 @@ vercel rollback <deployment-url-or-id> --token=$VERCEL_TOKEN
 ## Known gotchas
 | Symptom | Cause | Fix |
 |---|---|---|
-| Frontend served but `/health` 404s | FastAPI route declared after `app.frontend()`, or wrong entrypoint path in `pyproject.toml` | API routes always win over frontend regardless of order per Vercel's docs — if this still 404s, check `[tool.vercel] entrypoint` matches the real module path |
-| `vercel build` can't find the frontend | `frontend/dist/` is gitignored (build-output convention) but the hello-world page has no build step | Hello-world lives in `frontend/public/` (source-controlled) instead, per `backend/main.py`'s `app.frontend()` call. Once a real bundler is added, switch that call to `frontend/dist/` and add `npm run build` to CI before `vercel build` |
+| **[hit for real, 2026-09-29]** `FUNCTION_INVOCATION_FAILED`, 500 on every route; `vercel logs` shows `RuntimeError: Frontend directory 'frontend/public' does not exist` | Vercel's build-time static-promotion scan for `app.frontend()`/`app.mount()` did not bundle `frontend/public/` with a custom `[tool.vercel] entrypoint` (only confirmed to work for the docs' default `app.py` at repo root) | `backend/main.py` now inlines the hello-world HTML as a Python string instead of serving from disk — sidesteps the promotion scan entirely. When a real frontend build lands, use Vercel's standard static Build Command + Output Directory pipeline, not `app.frontend()`, and prove it with a real deploy before trusting it |
+| **[hit for real, 2026-09-29]** Production URL 302-redirects to `vercel.com/sso-api` (login wall) | Vercel's default "Standard Protection" protects every *generated per-deployment URL* (the one with a random hash, e.g. `we-are-dev-xband-pw6ani3ie-….vercel.app`) even for production — it only exempts the clean **production domain** (`we-are-dev-xband.vercel.app`) | Always test/share the clean production domain, not the URL `wait-for-deployment-action` or a build log hands you (that's the generated one). If judges need a specific hash-suffixed preview URL, disable protection for it in Settings → Deployment Protection, or use a bypass token |
+| `vercel tokens add` fails: "Cannot create tokens for this app" | Claude Code's Vercel login uses a scoped OAuth grant that can't mint personal tokens | Don't fight it — use the Git integration (this repo's current setup) instead of CLI-token deploys. Only a token created by you at vercel.com/account/tokens works for manual CLI deploys |
 | This kit's usual "frontend reads API base URL from a pipeline env var" rule doesn't apply here | Deliberate deviation: FastAPI serves frontend+backend from one Vercel project, same origin, so `fetch('/health')` needs no base URL | If Pocketful later needs a separate frontend host (e.g. a heavier framework deploy elsewhere), reintroduce `VITE_API_BASE_URL` from pipeline outputs and update `.env.example` |
 | BAND Desktop GUI doesn't appear in WSL2 | WSLg not enabled, or WSL version too old | `wsl --update`, confirm `wsl --version` shows WSLg; restart WSL (`wsl --shutdown`) |
-| Preview deploy smoke test fails with 401 | Vercel preview deployment protection (auth wall) | Deploy `--prod` (as this pipeline does) or add a protection bypass token |

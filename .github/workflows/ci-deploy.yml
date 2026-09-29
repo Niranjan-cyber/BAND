@@ -40,9 +40,14 @@ jobs:
           environment: production
           timeout: "600"
 
+      # deployment-url above is the per-deployment generated URL (random hash suffix), which
+      # Vercel's default "Standard Protection" puts behind an SSO login wall even in production
+      # (confirmed 2026-09-29 — see RUNBOOK.md "Known gotchas"). Only the clean production domain
+      # is exempt, so that's what judges/the smoke test must hit. Update PUBLIC_URL if the
+      # production domain ever changes (custom domain, project rename, etc).
       - name: Smoke test golden path on public URL
         env:
-          PUBLIC_URL: ${{ steps.deployment.outputs.deployment-url }}
+          PUBLIC_URL: https://we-are-dev-xband.vercel.app
         run: |
           npm install --no-save @playwright/test
           npx playwright install --with-deps chromium
