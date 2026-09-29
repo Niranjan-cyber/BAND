@@ -25,7 +25,7 @@ How humans and coding agents work in this repo. Keep it under ~80 lines: agents 
 | LLM | via `llm-adapter` (provider/model in config) | `LLM_PROVIDER=echo` by default; BAND's own agent runtime is separate from this adapter — this is for any in-app model calls the product itself makes |
 | Cloud + region | Vercel, region: default | Confirm latency once BAND agent calls or a database are added |
 | CI | GitHub Actions: `.github/workflows/ci-deploy.yml` | Push → Vercel's GitHub integration auto-deploys → CI waits via GitHub Deployments API (`vercel/wait-for-deployment-action`) → Playwright smoke test. No `VERCEL_TOKEN` — Claude Code's Vercel login can't create one |
-| Agent runtime | BAND Desktop, via WSL2 (Windows host doesn't support it natively) | See `RUNBOOK.md` "BAND Desktop (WSL2)" — **not yet verified end-to-end in this session** |
+| Agent runtime | Band Desktop (seats/room) + Python harness (WSL2) | Two separate pieces — see `RUNBOOK.md` "Band Desktop + harness". Harness-in-WSL2 is confirmed by the official guide and ready to run now. Whether Band Desktop's GUI itself runs on Windows is **genuinely unresolved** — ask in BAND Discord before building the real factory |
 
 ## Commands
 See `RUNBOOK.md`. Common ones: `uvicorn backend.main:app --reload`, `vercel dev`, `pytest`, `npx playwright test tests/smoke` (against `PUBLIC_URL`).

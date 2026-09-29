@@ -8,24 +8,37 @@ before running an infra command from memory.
 |---|---|---|---|
 | Production | https://we-are-dev-xband.vercel.app | same origin — `/health` | Vercel project `we-are-dev-xband` (`prj_P68DhuHgTYNVASf0gugrxskcHHzA`), team `niranjan-cybers-projects` (`team_Ght27pzXQ8zjMO4zVEthPeyk`), region: default |
 
-## BAND Desktop (WSL2) — one-time setup
-BAND Desktop does not support Windows natively (macOS/Linux only, per participant notes — confirm current
-support on band's own docs before relying on this). Run it inside WSL2:
+## Band Desktop + harness — one-time setup
+Source: `docs/participant-guide.md` in the **official** kickoff repo, read directly 2026-09-29
+(github.com/band-ai/dark-factory-wearedevs) — not third-party notes. Two separate things, don't
+conflate them:
 
-```bash
-# In an elevated PowerShell, if WSL2 isn't installed yet:
-wsl --install -d Ubuntu
+1. **The harness** (Python/Docker/Playwright — runs the stage checks). The guide explicitly says
+   "On Windows, run these steps inside WSL2." Confirmed commands, verbatim from the guide:
+   ```sh
+   # Inside WSL2 (wsl --install -d Ubuntu if you don't have a distro yet; already installed here)
+   python3 --version                # use any Python 3.12+ interpreter
+   docker --version                 # the daemon must be running
+   python3 -m venv .venv
+   . .venv/bin/activate
+   python -m pip install -r harness/requirements.txt
+   python -m playwright install --with-deps chromium   # --with-deps needed on Linux
+   python -m harness --help
+   ```
+   Run these from the `dark-factory-wearedevs/` directory after cloning
+   `github.com/band-ai/dark-factory-wearedevs` — that repo also has the actual Pocketful/Tablekeeper
+   specs (`pocketful/spec/stage-1.md` etc.) and test suites, so clone it regardless.
 
-# Inside the WSL2 Ubuntu shell:
-curl -fsSL <band-install-url-from-their-docs> | sh   # replace with the real installer command from band's docs
-band --version                                        # confirms the CLI is on PATH
-band login                                             # free account, no card required per participant notes
-```
-
-**Not yet verified in this session** (no BAND account here): the exact install command, whether BAND
-Desktop's GUI needs an X server / WSLg (Windows 11 ships WSLg by default, so a GUI app should show up
-without extra config — confirm on first run), and whether the coding-agent plugin needs a separate install
-step. Fill this section in for real the first time you do it and keep the exact commands.
+2. **Band Desktop itself** (creates the ≥3 coding-agent "seats" and the room — this is where the
+   actual autonomy/collaboration the rubric grades happens). **Genuinely unresolved as of
+   2026-09-29:** the guide's Docker Sandbox section lists "Windows 11" as a supported host for
+   "Band Desktop 0.4.10 or newer" (implying a native Windows GUI build), but the only public
+   releases I found (github.com/band-app/band, checked v0.38.0/v0.37.0/v0.35.0/nightly) ship only
+   macOS `.dmg`/`.zip` — no Windows installer, no Linux build either (so it can't just run in
+   WSL2 as a Linux app). **Ask in the BAND Discord before assuming either way** —
+   https://discord.com/invite/5YkNXmYfjk, named in the guide as "the formal channel for Band
+   Desktop, seat, permission and harness questions." Don't build the actual Pocketful factory
+   until this is resolved; the harness setup above doesn't depend on the answer, so do that now.
 
 ## Local setup
 ```bash
