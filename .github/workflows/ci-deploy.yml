@@ -1,11 +1,14 @@
-# Push to main -> vercel pull/build/deploy (single project: FastAPI backend + static frontend,
-# same-origin) -> smoke test on the public URL.
+# Push to main -> Vercel's GitHub integration auto-deploys (no CLI, no VERCEL_TOKEN) ->
+# CI waits for that deployment via GitHub's own Deployments API -> smoke test on the public URL.
 #
-# Commands verified against Vercel's docs on 2026-09-29 (references/deploy-pipelines.md #4);
-# re-check before relying on this after that date, flags/actions drift.
+# Prerequisite (one-time, dashboard): import this repo into Vercel via its GitHub integration
+# (vercel.com/new -> Import Git Repository) and set the Production Branch to `main`. See
+# RUNBOOK.md "Deploy". We switched to this from CLI-token deploys because Claude Code's Vercel
+# login is scoped and can't create personal tokens (references/deploy-pipelines.md #4 still
+# documents the CLI-token path as a fallback if you get a token another way).
 #
-# Required repo secrets (see RUNBOOK.md "Deploy" for how to get these):
-#   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# vercel/wait-for-deployment-action pinned to a commit SHA (2026-05-21) verified via
+# github.com/vercel/wait-for-deployment-action on 2026-09-29; re-check before trusting after that.
 name: ci-deploy
 on:
   push:
@@ -13,12 +16,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  deployments: read
+  statuses: read
 jobs:
   ship:
     runs-on: ubuntu-latest
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,30 +33,16 @@ jobs:
           pip install -r requirements.txt
           python -c "from backend.main import app; assert app"
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build (prebuilt output)
-        run: vercel build --prod --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy prebuilt output to production
-        id: deploy
-        run: |
-          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
-          echo "public_url=$url" >> "$GITHUB_OUTPUT"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Wait for Vercel deployment
+        id: deployment
+        uses: vercel/wait-for-deployment-action@0e2b0c5c5cce31f1648108aeec56467187aca037
+        with:
+          environment: production
+          timeout: "600"
 
       - name: Smoke test golden path on public URL
         env:
-          PUBLIC_URL: ${{ steps.deploy.outputs.public_url }}
+          PUBLIC_URL: ${{ steps.deployment.outputs.deployment-url }}
         run: |
           npm install --no-save @playwright/test
           npx playwright install --with-deps chromium

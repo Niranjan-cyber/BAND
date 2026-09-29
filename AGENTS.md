@@ -24,7 +24,7 @@ How humans and coding agents work in this repo. Keep it under ~80 lines: agents 
 | Data | Not chosen yet | Pocketful (wallet/payments, double-entry) will need a real datastore — pick one before phase 2 and add its deploy/migration step to this runbook |
 | LLM | via `llm-adapter` (provider/model in config) | `LLM_PROVIDER=echo` by default; BAND's own agent runtime is separate from this adapter — this is for any in-app model calls the product itself makes |
 | Cloud + region | Vercel, region: default | Confirm latency once BAND agent calls or a database are added |
-| CI | GitHub Actions: `.github/workflows/ci-deploy.yml` | `vercel pull` → `vercel build --prod` → `vercel deploy --prebuilt --prod` → Playwright smoke test |
+| CI | GitHub Actions: `.github/workflows/ci-deploy.yml` | Push → Vercel's GitHub integration auto-deploys → CI waits via GitHub Deployments API (`vercel/wait-for-deployment-action`) → Playwright smoke test. No `VERCEL_TOKEN` — Claude Code's Vercel login can't create one |
 | Agent runtime | BAND Desktop, via WSL2 (Windows host doesn't support it natively) | See `RUNBOOK.md` "BAND Desktop (WSL2)" — **not yet verified end-to-end in this session** |
 
 ## Commands
@@ -33,7 +33,7 @@ See `RUNBOOK.md`. Common ones: `uvicorn backend.main:app --reload`, `vercel dev`
 ## Skills and tools that are verified to load
 | Need | Skill / tool | Verified on | Notes |
 |---|---|---|---|
-| Deploy (cloud) | Vercel CLI pattern | **not yet run for real** | Commands checked against docs 2026-09-29; no live deploy observed yet — do the dry run before trusting this |
+| Deploy (cloud) | Vercel GitHub integration + `wait-for-deployment-action` | **not yet run for real** | Switched from CLI tokens after confirming Claude Code's Vercel login can't create them (2026-09-29). Dashboard import step still needs doing — see RUNBOOK.md |
 | Frontend design | `dataviz` / `artifact-design` skills (for later polish) | not yet used | |
 | Browser testing | Playwright (`tests/smoke/golden-path.spec.ts`) | **not yet run** | No Playwright install observed in this session |
 | Docs / diagrams | — | | |

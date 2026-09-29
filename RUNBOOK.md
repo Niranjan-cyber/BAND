@@ -43,22 +43,28 @@ vercel dev
 ```
 
 ## Deploy
-Deploys go through CI on push to `main`. **Before the first CI run**, do this once, locally, interactively
-(this is the one time manual/interactive commands are fine — it's project setup, not a deploy):
+**Primary path: Vercel's GitHub integration, not CLI tokens.** Claude Code's Vercel login is
+scoped and can't run `vercel tokens add` (confirmed 2026-09-29 — fails with "Cannot create
+tokens for this app"). Rather than fight that, deploys go through Vercel's own GitHub integration
+(push-to-deploy), and CI waits for that deployment via GitHub's Deployments API
+(`vercel/wait-for-deployment-action` — no Vercel token needed in CI at all).
 
+**One-time dashboard setup** (only you can do this — needs your Vercel account):
+1. vercel.com/new → Import Git Repository → pick this GitHub repo.
+2. Framework preset: Vercel should auto-detect the FastAPI zero-config setup from
+   `pyproject.toml`'s `[tool.vercel] entrypoint`. If it asks, Root Directory is `.`.
+3. Production Branch: `main`.
+4. Deploy once from the dashboard to confirm it builds, then every push to `main` auto-deploys.
+
+`vercel link` (already run once in this repo) recorded the project locally in `.vercel/repo.json`
+(note: newer Vercel CLI versions use `repo.json`, not the older `project.json` — don't go looking
+for the latter):
 ```bash
-vercel login                      # opens a browser; do this once per machine/account
-vercel link                       # creates .vercel/project.json locally — do NOT commit .vercel/
-cat .vercel/project.json          # copy "orgId" and "projectId"
-vercel tokens add ci-deploy       # or create one at vercel.com/account/tokens; copy the token
+cat .vercel/repo.json   # orgId + projectId, useful if you ever do get a CLI token
 ```
 
-Then set these as **GitHub repo secrets** (Settings → Secrets and variables → Actions), not in the repo:
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID` (the `orgId` from `.vercel/project.json`)
-- `VERCEL_PROJECT_ID` (the `projectId` from `.vercel/project.json`)
-
-Manual deploy only if CI is down:
+Manual/emergency deploy, only if both CI and the Git integration are down, and only if you've
+created a personal token yourself at vercel.com/account/tokens (Claude Code's login can't):
 ```bash
 vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 vercel build --prod --token=$VERCEL_TOKEN
