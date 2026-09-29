@@ -54,6 +54,50 @@ conflate them:
    Download button, not that repo.) Just install it directly on Windows: band.ai/download → click
    Download → run the installer → sign in (free account, per the hacker guide).
 
+## Band Desktop room status (as of 2026-09-30, ~00:20)
+**Done:**
+- Team "Feature crew" created in Band Desktop (5 seats: Planner, Implementer, Test author,
+  Reviewer, Integrator — handles `niranjaniyerofi/<role>`), all switched from the Codex default to
+  Claude Code.
+- **Claude Code runtime bug + fix, hit for real:** switching a seat's runtime to Claude Code fails
+  with `'C:\Users\Niranjan' is not recognized as an internal or external command` — Band's launcher
+  doesn't quote the Command path, and the Windows username has a space ("Niranjan Iyer"). Fix: in
+  Agent setup → Runtime → Launch details → Command, replace `claude` with the short (8.3, no-space)
+  path: `C:\Users\NIRANJ~1\AppData\Roaming\npm\claude.cmd` (get it via
+  `(New-Object -ComObject Scripting.FileSystemObject).GetFile("<full path>").ShortPath` in
+  PowerShell if the npm install location ever changes). Then "Test runtime" goes green. Do this
+  per-seat — no bulk/team-level way to set it found in the UI.
+- All 5 seats confirmed responsive with a real bidirectional `@handle` exchange in the "Feature
+  crew" room (Planner↔Implementer, then Reviewer/Integrator/Test author each replied) — this is
+  Gate 2 ("room log shows messages exchanged between at least two of your own seats... with a reply
+  in each direction") genuinely satisfied, not just configured.
+- Mandate files written (verbatim from each seat's actual Band "Role" tab content — that tab is
+  literally "sent to this agent's model as part of its instructions," so the mandate must match it,
+  not paraphrase it) and committed in `~/band-work/result/mandates/{planner,implementer,test-author,
+  reviewer,integrator}.md`, each starting `Harness: Claude Code` / `Model: claude-sonnet-5`.
+  **The Model line is a best guess** (matches this environment) — not independently confirmed as
+  what each seat actually resolves to at runtime; verify against the real room transcript/room.json
+  before final submission.
+
+**Not yet done — do this before dispatching stage-1:**
+1. **Fix each seat's working directory.** Currently blank/default ("managed workspace" — Band
+   creates a sandboxed copy). The guide warns: *"a seat works in its own sandbox, may not be able to
+   resolve `../band-work`, and will otherwise create a repository only it can see."* Since
+   `~/band-work/result` lives in WSL2 and the seats run as Windows-native Claude Code, point each
+   seat's working directory at the Windows-visible UNC path:
+   `\\wsl.localhost\Ubuntu\home\niranjan_iyer\band-work\result`
+   (Agents → each seat → Runtime tab → Edit → Working directory field.) Not yet verified that Band's
+   Windows-native process can actually read/write through this UNC path — test it once on one seat
+   before doing all 5.
+2. **Dispatch stage-1**, one message to Planner (send it yourself in the room — I can't click inside
+   Band Desktop), referencing the spec at its Windows-visible path:
+   `\\wsl.localhost\Ubuntu\home\niranjan_iyer\dark-factory-wearedevs\pocketful\spec\stage-1.md`
+   Keep the dispatch minimal — don't hand it a pre-baked architecture; over-specifying undercuts the
+   Factory criterion, which grades the factory's *own* planning.
+3. **From the moment that's sent: hands-off.** No further messages into the room, no fixing seat
+   output by hand (disqualifier #1), no steering. Verify only via the harness
+   (`python -m harness check` / `run` from `~/dark-factory-wearedevs`), which doesn't touch the room.
+
 ## Local setup
 ```bash
 # Backend (from repo root)
