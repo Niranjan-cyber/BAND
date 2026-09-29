@@ -33,11 +33,17 @@ jobs:
           pip install -r requirements.txt
           python -c "from backend.main import app; assert app"
 
+      # project-slug is required: this GitHub repo has TWO Vercel projects linked to it
+      # ("band" and "we-are-dev-xband", confirmed via `vercel projects ls` 2026-09-29 — a
+      # leftover from setup, not intentional). Without it, GitHub's environment name is
+      # "Production – we-are-dev-xband" (suffixed, disambiguated), not the plain "production"
+      # this action defaults to, so it found nothing and hung until timeout.
       - name: Wait for Vercel deployment
         id: deployment
         uses: vercel/wait-for-deployment-action@0e2b0c5c5cce31f1648108aeec56467187aca037
         with:
           environment: production
+          project-slug: we-are-dev-xband
           timeout: "600"
 
       # deployment-url above is the per-deployment generated URL (random hash suffix), which
