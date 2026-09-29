@@ -54,6 +54,6 @@ not to the tests" is checking.
 ## Riskiest dependency: proven from the deployed environment?
 | Dependency | Proven? | Time | Notes |
 |---|---|---|---|
-| Band Desktop seat/room creation on Windows | **Genuinely unclear — needs a human answer** | — | The guide's harness setup says "On Windows, run these steps inside WSL2," but that instruction is scoped to the Python/Docker/Playwright *harness* only. Separately, the Docker Sandbox section lists "Windows 11" as a supported *host* for "Band Desktop 0.4.10 or newer," implying a native Windows GUI build exists — but the only public releases I could find (github.com/band-app/band) ship macOS-only `.dmg`/`.zip` artifacts, no Windows installer. Ask in the **BAND Discord** (https://discord.com/invite/5YkNXmYfjk) — the guide names it as the formal channel for exactly this |
-| Harness setup itself (Python venv, Docker, Playwright) under WSL2 | Not yet run | — | Fully specified now, not blocked on the Windows-GUI question — see RUNBOOK.md, can do this immediately |
+| Band Desktop seat/room creation on Windows | **Resolved 2026-09-29** | — | band.ai/download confirms native Windows support (no WSL2 needed for the app). Install directly from there |
+| Harness setup itself (Python venv, Docker, Playwright) under WSL2 | Not yet run | — | Fully specified now — see RUNBOOK.md, ready to run |
 | Vercel FastAPI zero-config deploy | **Proven 2026-09-29** | ~3 iterations, ~30 min | Live at https://we-are-dev-xband.vercel.app, CI green. Hit and fixed: static-promotion crash (now inlines HTML), SSO wall on generated URLs (use the production domain), duplicate-project ambiguity (added `project-slug`) — see RUNBOOK.md |

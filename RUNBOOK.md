@@ -30,15 +30,13 @@ conflate them:
    specs (`pocketful/spec/stage-1.md` etc.) and test suites, so clone it regardless.
 
 2. **Band Desktop itself** (creates the ≥3 coding-agent "seats" and the room — this is where the
-   actual autonomy/collaboration the rubric grades happens). **Genuinely unresolved as of
-   2026-09-29:** the guide's Docker Sandbox section lists "Windows 11" as a supported host for
-   "Band Desktop 0.4.10 or newer" (implying a native Windows GUI build), but the only public
-   releases I found (github.com/band-app/band, checked v0.38.0/v0.37.0/v0.35.0/nightly) ship only
-   macOS `.dmg`/`.zip` — no Windows installer, no Linux build either (so it can't just run in
-   WSL2 as a Linux app). **Ask in the BAND Discord before assuming either way** —
-   https://discord.com/invite/5YkNXmYfjk, named in the guide as "the formal channel for Band
-   Desktop, seat, permission and harness questions." Don't build the actual Pocketful factory
-   until this is resolved; the harness setup above doesn't depend on the answer, so do that now.
+   actual autonomy/collaboration the rubric grades happens). **Resolved 2026-09-29:** band.ai's
+   own download page (band.ai/download) explicitly lists "macOS, Windows & Linux" support — runs
+   **natively on Windows, no WSL2 needed for the app itself**. (The `github.com/band-app/band`
+   GitHub Releases I checked earlier only had macOS artifacts — wrong/incomplete channel; the
+   real Windows/Linux builds are served through band.ai's own site with OS auto-detection on the
+   Download button, not that repo.) Just install it directly on Windows: band.ai/download → click
+   Download → run the installer → sign in (free account, per the hacker guide).
 
 ## Local setup
 ```bash
