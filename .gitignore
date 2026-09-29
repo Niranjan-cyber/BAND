@@ -1,0 +1,30 @@
+# secrets and local state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.aws-sam/
+.vercel/
+.wrangler/
+cdk.out/
+.terraform/
+*.tfstate*
+
+# dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+__pycache__/
+*.pyc
+.venv/
+coverage/
+playwright-report/
+test-results/
+
+# editors and OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

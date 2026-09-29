@@ -1,0 +1,78 @@
+/*
+  Design tokens (light + dark) with contrast checked by scripts/contrast_check.py.
+  Re-run after any change:
+    python scripts/contrast_check.py --css assets/design-tokens.template.css \
+      --pairs "text:bg,text:surface,text-muted:bg,text-muted:surface,accent-contrast:accent,accent:bg,danger:bg,success:bg,warning:bg,border-ui:bg"
+    (add --dark for the dark theme)
+  Rules: text pairs must pass AA (4.5:1); UI borders/icons/focus rings must pass 3:1.
+  --divider is decorative only and is deliberately low contrast: never use it for input borders or focus rings.
+  Swap the accent and keep the pairing rules; do not pick colours by eye.
+*/
+:root {
+  --bg: #ffffff;
+  --surface: #f3f4f6;
+  --text: #111827;
+  --text-muted: #4b5563;
+  --accent: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
+  --border-ui: #6b7280;
+  --divider: #d1d5db;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius: 10px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --text-sm: 0.875rem; --text-base: 1rem; --text-lg: 1.25rem; --text-xl: 1.75rem; --text-2xl: 2.5rem;
+  --focus-ring: 2px solid var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220;
+    --surface: #111a2e;
+    --text: #f9fafb;
+    --text-muted: #9ca3af;
+    --accent: #60a5fa;
+    --accent-contrast: #0b1220;
+    --danger: #f87171;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --border-ui: #9ca3af;
+    --divider: #1f2a44;
+  }
+}
+
+/* Explicit dark theme (used by the contrast checker's --dark flag and by manual toggles). */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #111a2e;
+  --text: #f9fafb;
+  --text-muted: #9ca3af;
+  --accent: #60a5fa;
+  --accent-contrast: #0b1220;
+  --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --border-ui: #9ca3af;
+  --divider: #1f2a44;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-sans); }
+:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* Data-mode badge: every screen root carries data-mode="live|sample|fixture" (the smoke test asserts it). */
+[data-mode="sample"]::before,
+[data-mode="fixture"]::before {
+  content: "Sample data";
+  display: inline-block;
+  margin: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}

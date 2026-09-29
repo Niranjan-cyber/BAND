@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dark Factory — Pocketful</title>
+<link rel="stylesheet" href="/styles/tokens.css" />
+<style>
+  body { margin: 0; padding: 2rem; }
+  main { max-width: 32rem; margin: 4rem auto; text-align: center; }
+  h1 { font-size: 1.5rem; }
+  .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge[data-status="ok"] { background: #16a34a22; color: #16a34a; }
+  .badge[data-status="checking"] { background: #6b728022; color: #6b7280; }
+  .badge[data-status="error"] { background: #dc262622; color: #dc2626; }
+</style>
+</head>
+<body>
+<main data-mode="live">
+  <h1>Dark Factory — Pocketful</h1>
+  <p>Hello-world walking skeleton. Replace this page with the real frontend kit (see frontend/README.md).</p>
+  <p>API status: <span id="status" class="badge" data-status="checking">checking…</span></p>
+</main>
+<script>
+  fetch('/health')
+    .then((r) => r.json())
+    .then((data) => {
+      const el = document.getElementById('status');
+      el.textContent = data.status + ' (' + data.mode + ')';
+      el.dataset.status = data.status === 'ok' ? 'ok' : 'error';
+    })
+    .catch(() => {
+      const el = document.getElementById('status');
+      el.textContent = 'unreachable';
+      el.dataset.status = 'error';
+    });
+</script>
+</body>
+</html>
