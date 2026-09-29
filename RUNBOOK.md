@@ -14,20 +14,36 @@ Source: `docs/participant-guide.md` in the **official** kickoff repo, read direc
 conflate them:
 
 1. **The harness** (Python/Docker/Playwright — runs the stage checks). The guide explicitly says
-   "On Windows, run these steps inside WSL2." Confirmed commands, verbatim from the guide:
+   "On Windows, run these steps inside WSL2." **Proven working end to end, 2026-09-29:**
    ```sh
-   # Inside WSL2 (wsl --install -d Ubuntu if you don't have a distro yet; already installed here)
-   python3 --version                # use any Python 3.12+ interpreter
-   docker --version                 # the daemon must be running
-   python3 -m venv .venv
-   . .venv/bin/activate
+   # Inside WSL2 Ubuntu (wsl -d Ubuntu):
+   sudo apt-get install -y python3.14-venv   # not preinstalled on fresh Ubuntu — hit this for real
+   cd ~ && git clone https://github.com/band-ai/dark-factory-wearedevs
+   cd dark-factory-wearedevs
+   python3 -m venv .venv && . .venv/bin/activate
    python -m pip install -r harness/requirements.txt
-   python -m playwright install --with-deps chromium   # --with-deps needed on Linux
-   python -m harness --help
+   python -m playwright install --with-deps chromium
+   python -m harness --help        # confirmed: shows `run` and `check` subcommands
    ```
-   Run these from the `dark-factory-wearedevs/` directory after cloning
-   `github.com/band-ai/dark-factory-wearedevs` — that repo also has the actual Pocketful/Tablekeeper
-   specs (`pocketful/spec/stage-1.md` etc.) and test suites, so clone it regardless.
+   That repo also has the actual Pocketful/Tablekeeper specs (`pocketful/spec/stage-1.md` etc.)
+   and test suites — it's already cloned to `~/dark-factory-wearedevs` in WSL2 Ubuntu.
+
+   **Docker Desktop's WSL integration gotcha (hit for real):** `docker` wasn't found in Ubuntu
+   even after enabling the toggle in Settings → Resources → WSL Integration, because Ubuntu was
+   reinstalled *after* Docker Desktop had already started — it never picked up the new distro.
+   Fix: Settings → Resources → WSL Integration → **Refetch distros**, then fully quit Docker
+   Desktop from its system-tray icon (not just close the window) and reopen it.
+
+   Per the guide's convention, also set up (already done in WSL2 Ubuntu, `~/band-work/`):
+   ```sh
+   mkdir -p ~/band-work/result/stage-1 ~/band-work/checks
+   git -C ~/band-work/result init -b main
+   git -C ~/band-work/result config user.name "Your Name"
+   git -C ~/band-work/result config user.email you@example.test
+   ```
+   `~/band-work/result` is the actual submission repo (starts empty on purpose — the graded
+   language/framework isn't chosen by the event). Give agent seats its **absolute path**, not a
+   relative one.
 
 2. **Band Desktop itself** (creates the ≥3 coding-agent "seats" and the room — this is where the
    actual autonomy/collaboration the rubric grades happens). **Resolved 2026-09-29:** band.ai's

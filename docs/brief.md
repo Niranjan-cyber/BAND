@@ -54,6 +54,6 @@ not to the tests" is checking.
 ## Riskiest dependency: proven from the deployed environment?
 | Dependency | Proven? | Time | Notes |
 |---|---|---|---|
-| Band Desktop seat/room creation on Windows | **Resolved 2026-09-29** | — | band.ai/download confirms native Windows support (no WSL2 needed for the app). Install directly from there |
-| Harness setup itself (Python venv, Docker, Playwright) under WSL2 | Not yet run | — | Fully specified now — see RUNBOOK.md, ready to run |
+| Band Desktop seat/room creation on Windows | **Resolved 2026-09-29** | — | band.ai/download confirms native Windows support (no WSL2 needed for the app). Installed |
+| Harness setup (Python venv, Docker, Playwright) under WSL2 | **Proven 2026-09-29** | ~30 min incl. two real blockers | Kickoff repo cloned to `~/dark-factory-wearedevs` in WSL2 Ubuntu, `python -m harness --help` runs. Hit and fixed: missing `python3.14-venv` package, Docker Desktop's WSL integration not picking up a distro reinstalled after it last started (needed Refetch distros + full quit/reopen) — see RUNBOOK.md |
 | Vercel FastAPI zero-config deploy | **Proven 2026-09-29** | ~3 iterations, ~30 min | Live at https://we-are-dev-xband.vercel.app, CI green. Hit and fixed: static-promotion crash (now inlines HTML), SSO wall on generated URLs (use the production domain), duplicate-project ambiguity (added `project-slug`) — see RUNBOOK.md |
