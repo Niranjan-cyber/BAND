@@ -33,9 +33,9 @@ See `RUNBOOK.md`. Common ones: `uvicorn backend.main:app --reload`, `vercel dev`
 ## Skills and tools that are verified to load
 | Need | Skill / tool | Verified on | Notes |
 |---|---|---|---|
-| Deploy (cloud) | Vercel GitHub integration + `wait-for-deployment-action` | **not yet run for real** | Switched from CLI tokens after confirming Claude Code's Vercel login can't create them (2026-09-29). Dashboard import step still needs doing — see RUNBOOK.md |
+| Deploy (cloud) | Vercel GitHub integration + `wait-for-deployment-action` | **2026-09-29, live** | Push → main → auto-deploy → CI wait → smoke test, green end to end against https://we-are-dev-xband.vercel.app. Took 3 iterations to get right — see RUNBOOK.md "Known gotchas" for the real failures hit (static-promotion crash, SSO wall on generated URLs, duplicate-project ambiguity) |
 | Frontend design | `dataviz` / `artifact-design` skills (for later polish) | not yet used | |
-| Browser testing | Playwright (`tests/smoke/golden-path.spec.ts`) | **not yet run** | No Playwright install observed in this session |
+| Browser testing | Playwright (`tests/smoke/golden-path.spec.ts`) | **2026-09-29, live** | Ran in CI against the public URL; both checks passed |
 | Docs / diagrams | — | | |
 | Demo video / submission | hackathon-demo-submission | | Use once there's a real golden path to script |
 | Event process | build-hackathon | | Hand off here after the dry run passes |

@@ -27,5 +27,5 @@
 | Dependency | Proven? | Time | Notes |
 |---|---|---|---|
 | BAND Desktop under WSL2 | Not proven | — | Never run in this session; do this before anything else per compressed-mode rules |
-| Vercel FastAPI zero-config deploy | Not proven | — | Files written, no live deploy observed yet — do the dry run |
+| Vercel FastAPI zero-config deploy | **Proven 2026-09-29** | ~3 iterations, ~30 min | Live at https://we-are-dev-xband.vercel.app, CI green. Hit and fixed: static-promotion crash (now inlines HTML), SSO wall on generated URLs (use the production domain), duplicate-project ambiguity (added `project-slug`) — see RUNBOOK.md |
 | Exact grading harness (field names / status codes / `data-testid`) | Unknown | — | Only available from the official per-track spec at kickoff, not on the public page — find it in your enrollment materials/Discord before building Pocketful's real endpoints |
