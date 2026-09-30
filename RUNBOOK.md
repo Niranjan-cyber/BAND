@@ -79,6 +79,12 @@ conflate them:
   what each seat actually resolves to at runtime; verify against the real room transcript/room.json
   before final submission.
 
+**Done (2026-09-30):**
+- `CREDITS.md` added and committed to `~/band-work/result` (the real submission repo, dark-factory-pocketful),
+  disclosing Claude Code's role in scaffolding + writing the 5 mandate files, and stating that
+  `stage-1/`–`stage-4/` app code comes only from the Band room collaboration. **Committed locally, not yet
+  pushed** — push when you're ready to make it public.
+
 **Not yet done — do this before dispatching stage-1:**
 1. **Fix each seat's working directory.** Currently blank/default ("managed workspace" — Band
    creates a sandboxed copy). The guide warns: *"a seat works in its own sandbox, may not be able to
